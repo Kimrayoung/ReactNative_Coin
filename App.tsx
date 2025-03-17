@@ -156,4 +156,17 @@ export default App;
     - import { useNavigation } from '@react-navigation/native'
     - const navigation = useNavigation();
     - button onPress={() => {}}
+
+  함수 컴포넌트 내부와 외부에 변수를 선언하는 차이 -> 그 변수의 용도와 리렌더링 관계에 따라 결정됨
+  함수 컴포넌트 외부에 선언하는 경우(ex: const {width, height})
+    - 컴포넌트가 리렌더링되어도 다시 계산되지 않는 값들
+    - 컴포넌트 인스턴스 간에 공유되어도 문제없는 값들
+    - 앱 실행 시 한 번만 계산하면 되는 값들
+    - const {width, height}: Dimension.get('screen')와 같은 작업은 화큰 크기를 가져오는 작업으로, 일반적으로 앱이 시작될 떄 한번만 계산해도 충분함
+  함수 컴포넌트 내부에 선언하는 경우
+    - 컴포넌트의 상태(state)와 관련된 값들
+    - 컴포넌트가 받는 props에 의존하는 값들
+    - 컴포넌트 인스턴스마다 고유해야 하는 값들
+    - 리렌드링마다 다시 계산/참조해야 하는 값들
+
 */

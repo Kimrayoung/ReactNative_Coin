@@ -115,6 +115,8 @@ interface CoinEtcProps {
   fromAth: number | string;
 }
 
+// React컴포넌트는 하나의 루트 요소만 반환할 수 있다
+// 여기서 <></>가 없다면 두개의 <View></View>를 반환하게 되어서 <>로 감싸준것
 const CoinEtcDescription = ({rank, started_at, ath, fromAth}: CoinEtcProps) => (
   <>
     <View style={styles.containerRowCenter}>
@@ -280,4 +282,14 @@ export default Details;
 useRoute
     - Details파일에 전해진 정보를 가져올 수 있는 모듈
 route.param: route에 전달된 정보들
+
+onPress={() => onLinkPress(coinData.links.explorer[0])}
+- 함수를 전달하는 것
+- 화살표 함수는 버튼이 눌렀을때만 실행된다
+- 이벤트가 발생할 때 호출됨
+
+onPress={onLinkPress(coinData.links.explorer[0])}
+- 함수의 호출의 결과를 전달하는 것
+- 컴포넌트가 렌더링될 때 즉시 onLinkPress함수가 실행된다
+- 컴포넌트가 렌더링될 때 즉시 onLinkPress함수가 실행되므로 버튼을 눌렀을때는 아무 동작을 하지 않게 된다
 */
