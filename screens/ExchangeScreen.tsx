@@ -131,3 +131,10 @@ const styles = StyleSheet.create({
 });
 
 export default ExchangeScreen;
+
+/*
+onPress={() => Linking.openURL(e.links.website[0])}을 일반 함수로 나타내면?
+onPress={function() {
+    return Linking.openURL(e.links.website[0]);
+  }}
+*/
