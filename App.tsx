@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import SplashScreen from 'react-native-splash-screen';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -9,104 +9,179 @@ import ExchangeScreen from './screens/ExchangeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import FontAwesome5 from '@react-native-vector-icons/fontawesome5';
 import HomeStack from './components/HomeStack';
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import {View, TouchableOpacity, Image, Text} from 'react-native';
 
 // 탭바 영역
 const Tap = createBottomTabNavigator();
 
 function App() {
+  const [state, setState] = useState({
+    userInfo: null,
+  });
+
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 1000);
   });
+  // 로그인할 때 api요청을 넣는 것이기 때문에 webClientID가 필요함
+  // webClientId는 API요청을 어느 경로로 넣을것인지를 의미함
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '548903654394-7k9rreekqt1ee0i4403j6c9otmvmgfdg.apps.googleusercontent.com',
+      iosClientId:
+        '548903654394-impol0764feu39duufv7kniiiqi7s9v9.apps.googleusercontent.com',
+    });
+  }, []);
+
+  const signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices(); // 핸드폰에 구글 플레이서비스가 설치되어져있는지 확인
+      const response = await GoogleSignin.signIn(); //로그인
+      if (isSuccessResponse(response)) {
+        setState({userInfo: response.data});
+        console.log(response.data);
+      } else {
+        console.log('canceled sign');
+      }
+    } catch (error) {
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.IN_PROGRESS:
+            console.error('in progress');
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            console.error('Play services not available');
+            break;
+          default:
+            console.error(error.code + ': ' + error.message);
+        }
+      } else {
+        console.error(error);
+      }
+    }
+  };
 
   return (
-    <NavigationContainer>
-      <Tap.Navigator
-        screenOptions={{headerShown: false}}
-        initialRouteName="Home">
-        <Tap.Screen
-          name="Exchanges"
-          component={ExchangeScreen}
-          options={{
-            tabBarIcon: ({focused}) => {
-              return (
-                <FontAwesome5
-                  name="exchange-alt"
-                  iconStyle="solid"
-                  color={focused ? '#1263ce' : 'a0a0a0'}
-                  size={16}
-                />
-              );
-            },
-          }}
-        />
-        <Tap.Screen
-          name="Tags"
-          component={TagsScreen}
-          options={{
-            tabBarIcon: ({focused}) => {
-              return (
-                <FontAwesome5
-                  name="tags"
-                  iconStyle="solid"
-                  color={focused ? '#1263ce' : 'a0a0a0'}
-                  size={16}
-                />
-              );
-            },
-          }}
-        />
-        <Tap.Screen
-          name="Home"
-          component={HomeStack}
-          options={{
-            tabBarIcon: ({focused}) => {
-              return (
-                <FontAwesome5
-                  name="home"
-                  iconStyle="solid"
-                  color={focused ? '#1263ce' : 'a0a0a0'}
-                  size={16}
-                />
-              );
-            },
-          }}
-        />
-        <Tap.Screen
-          name="Search"
-          component={SearchScreen}
-          options={{
-            tabBarIcon: ({focused}) => {
-              return (
-                <FontAwesome5
-                  name="search"
-                  iconStyle="solid"
-                  color={focused ? '#1263ce' : 'a0a0a0'}
-                  size={16}
-                />
-              );
-            },
-          }}
-        />
-        <Tap.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{
-            tabBarIcon: ({focused}) => {
-              return (
-                <FontAwesome5
-                  name="user-alt"
-                  iconStyle="solid"
-                  color={focused ? '#1263ce' : 'a0a0a0'}
-                  size={16}
-                />
-              );
-            },
-          }}
-        />
-      </Tap.Navigator>
-    </NavigationContainer>
+    <View>
+      <TouchableOpacity
+        style={{
+          backgroundColor: '#eeeeee',
+          padding: '5%',
+          margin: '5%',
+          borderRadius: 10,
+        }}
+        onPress={signIn}>
+        <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+          <Image
+            source={{
+              uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png',
+            }}
+            style={{
+              width: '7.5%',
+              height: '127.5%',
+              marginTop: '-0.5%',
+              marginLeft: '2.5%',
+              marginRight: '2.5%',
+            }}
+          />
+          <Text style={{fontSize: 18}}>Login with Google</Text>
+        </View>
+      </TouchableOpacity>
+    </View>
+    // <NavigationContainer>
+    //   <Tap.Navigator
+    //     screenOptions={{headerShown: false}}
+    //     initialRouteName="Home">
+    //     <Tap.Screen
+    //       name="Exchanges"
+    //       component={ExchangeScreen}
+    //       options={{
+    //         tabBarIcon: ({focused}) => {
+    //           return (
+    //             <FontAwesome5
+    //               name="exchange-alt"
+    //               iconStyle="solid"
+    //               color={focused ? '#1263ce' : 'a0a0a0'}
+    //               size={16}
+    //             />
+    //           );
+    //         },
+    //       }}
+    //     />
+    //     <Tap.Screen
+    //       name="Tags"
+    //       component={TagsScreen}
+    //       options={{
+    //         tabBarIcon: ({focused}) => {
+    //           return (
+    //             <FontAwesome5
+    //               name="tags"
+    //               iconStyle="solid"
+    //               color={focused ? '#1263ce' : 'a0a0a0'}
+    //               size={16}
+    //             />
+    //           );
+    //         },
+    //       }}
+    //     />
+    //     <Tap.Screen
+    //       name="Home"
+    //       component={HomeStack}
+    //       options={{
+    //         tabBarIcon: ({focused}) => {
+    //           return (
+    //             <FontAwesome5
+    //               name="home"
+    //               iconStyle="solid"
+    //               color={focused ? '#1263ce' : 'a0a0a0'}
+    //               size={16}
+    //             />
+    //           );
+    //         },
+    //       }}
+    //     />
+    //     <Tap.Screen
+    //       name="Search"
+    //       component={SearchScreen}
+    //       options={{
+    //         tabBarIcon: ({focused}) => {
+    //           return (
+    //             <FontAwesome5
+    //               name="search"
+    //               iconStyle="solid"
+    //               color={focused ? '#1263ce' : 'a0a0a0'}
+    //               size={16}
+    //             />
+    //           );
+    //         },
+    //       }}
+    //     />
+    //     <Tap.Screen
+    //       name="Profile"
+    //       component={ProfileScreen}
+    //       options={{
+    //         tabBarIcon: ({focused}) => {
+    //           return (
+    //             <FontAwesome5
+    //               name="user-alt"
+    //               iconStyle="solid"
+    //               color={focused ? '#1263ce' : 'a0a0a0'}
+    //               size={16}
+    //             />
+    //           );
+    //         },
+    //       }}
+    //     />
+    //   </Tap.Navigator>
+    // </NavigationContainer>
   );
 }
 
